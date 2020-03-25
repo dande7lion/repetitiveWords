@@ -42,6 +42,46 @@ public class Main {
         return (repeatedWordsDouble/numberOfWordsDouble)*100;
     }
 
+    public static void createFile(FileWriter output, Scanner input, String fileName) throws IOException {
+        input = new Scanner(new BufferedReader(new FileReader(fileName)));
+        String[] inputWords = new String[maxLength];
+        int inputElement = 0, numberOfSignElem = 0;
+        String[] tmpSigns = new String[5];
+        while (input.hasNext()) {
+            inputWords[inputElement] = input.next();
+            for (int i = 0; i < signs.length; i++) {
+                while (inputWords[inputElement].endsWith(signs[i])) {
+                    tmpSigns[numberOfSignElem] = inputWords[inputElement].substring((inputWords[inputElement].length()) - 1, (inputWords[inputElement].length()));
+                    inputWords[inputElement] = inputWords[inputElement].substring(0, (inputWords[inputElement].length()) - 1);
+                    numberOfSignElem++;
+                }
+
+                //words modification (if it's necessary)
+                for (int j = 0; j < numberOfRepeatedWords; j++) {
+                    if (inputWords[inputElement].equals(repeatedWords[j])) {
+                        inputWords[inputElement] = "[" + inputWords[inputElement] + "]";
+                        if(numberOfSignElem != 0) {
+                            for (int last = numberOfSignElem-1; last >= 0; last--) {
+                                inputWords[inputElement] = inputWords[inputElement] + tmpSigns[last];
+                            }
+                            tmpSigns = new String[5];
+                            numberOfSignElem = 0;
+                        }
+                    }
+                    }
+                }
+            if(numberOfSignElem != 0) {
+                for (int last = numberOfSignElem - 1; last >= 0; last--) {
+                    inputWords[inputElement] = inputWords[inputElement] + tmpSigns[last];
+                }
+                tmpSigns = new String[5];
+                numberOfSignElem = 0;
+            }
+                output.write(inputWords[inputElement] + " ");
+                inputElement++;
+            }
+    }
+
     public static void main(String[] args) throws IOException {
 
         Scanner fileInFirst = null, fileInSecond = null;
@@ -52,6 +92,7 @@ public class Main {
         int firstRepeatedWords = 0, secondRepeatedWords = 0, i, j;
         int firstNumberOfWords = 0, secondNumberOfWords = 0;
         numberOfRepeatedWords = 0;
+        FileWriter fileOut1 = null, fileOut2 = null;
 
         try {
             fileInFirst = new Scanner(new BufferedReader(new FileReader(args[0])));
@@ -77,6 +118,11 @@ public class Main {
             System.out.println(args[0] + ": " + firstPercentage + "% of repeated words in the first file");
             System.out.println(args[1] + ": " + secondPercentage + "% of repeated words in the second file");
 
+            fileOut1 = new FileWriter("file1.txt");
+            fileOut2 = new FileWriter("file2.txt");
+            Main.createFile(fileOut1, fileInFirst, args[0]);
+            Main.createFile(fileOut2, fileInSecond, args[1]);
+
         }
         catch (FileNotFoundException ex) {
             System.out.println("File error");
@@ -87,6 +133,12 @@ public class Main {
 
             if (fileInSecond != null)
                 fileInSecond.close();
+
+            if (fileOut1 != null)
+                fileOut1.close();
+
+            if (fileOut2 != null)
+                fileOut2.close();
 
         }
 
