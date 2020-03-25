@@ -3,99 +3,90 @@ import java.util.Scanner;
 
 public class Main {
 
+    static int maxLength = 1000;
+    static String [] signs = {".", ",", "!", "?", ";", ":", "(", ")","\""};
+    static String repeatedWords [];
+    static int numberOfRepeatedWords = 0;
+
+    public static int rewriteWords(Scanner file, String [] wordsFromFile){
+        int numberOfWords = 0;
+        int i = 0;
+        while (file.hasNext()) {
+            wordsFromFile[numberOfWords] = file.next();
+            for (i = 0; i < signs.length; i++) {
+                while (wordsFromFile[numberOfWords].endsWith(signs[i])) {
+                    wordsFromFile[numberOfWords] = wordsFromFile[numberOfWords].substring(0, (wordsFromFile[numberOfWords].length()) - 1);
+                }
+            }
+            numberOfWords++;
+        }
+
+        return numberOfWords;
+    }
+
+    public static int repeatedWordsInFile(int numberOfWords, String [] fileWords){
+        int repeatedWordsInFile = 0, i = 0, j = 0;
+        for(i = 0; i < numberOfWords; i++)
+            for(j = 0; j < numberOfRepeatedWords; j++){
+                if(fileWords[i].equals(repeatedWords[j])){
+                    repeatedWordsInFile++;
+                }
+            }
+        return repeatedWordsInFile;
+    }
+
+    public static double percentageOfRepeatedWords(int repeatedWords, int numberOfWords){
+
+        double repeatedWordsDouble = (double)repeatedWords;
+        double numberOfWordsDouble = (double)numberOfWords;
+        return (repeatedWordsDouble/numberOfWordsDouble)*100;
+    }
+
     public static void main(String[] args) throws IOException {
 
-        Scanner in1 = null;
-        Scanner in2 = null;
-        String tab1 [] = new String [20];
-        String tab2 [] = new String [20];
-        String powtorzenia [] = new String [20];
-        int powt1 = 0, powt2 = 0;
-
-        String [] znak = {".", ",", "!", "?", ";", ":", "(", ")"};
-
-        int i = 0, j, k, l, m = 0, n, s = 0;
+        Scanner fileInFirst = null, fileInSecond = null;
+        String [] firstFileWords, secondFileWords;
+        firstFileWords = new String [maxLength];
+        secondFileWords = new String [maxLength];
+        repeatedWords = new String [maxLength];
+        int firstRepeatedWords = 0, secondRepeatedWords = 0, i, j;
+        int firstNumberOfWords = 0, secondNumberOfWords = 0;
+        numberOfRepeatedWords = 0;
 
         try {
-            in1 = new Scanner(new BufferedReader(new FileReader(args[0])));
+            fileInFirst = new Scanner(new BufferedReader(new FileReader(args[0])));
+            firstNumberOfWords = Main.rewriteWords(fileInFirst, firstFileWords);
+            fileInSecond = new Scanner(new BufferedReader(new FileReader(args[1])));
+            secondNumberOfWords = Main.rewriteWords(fileInSecond, secondFileWords);
 
-            while (in1.hasNext()) {
-                tab1[i] = in1.next();
-                for (j = 0; j < znak.length; j++) {
-                    while (tab1[i].endsWith(znak[j])) {
-                        tab1[i] = tab1[i].substring(0, (tab1[i].length()) - 1);
-                    }
-                }
-                i++;
-            }
-            in2 = new Scanner(new BufferedReader(new FileReader(args[1])));
-
-            while (in2.hasNext()) {
-                tab2[m] = in2.next();
-                for (l = 0; l < znak.length; l++) {
-                    while (tab2[m].endsWith(znak[l])) {
-                        tab2[m] = tab2[m].substring(0, (tab2[m].length()) - 1);
-                    }
-                }
-                m++;
-            }
-
-            for(k = 0; k < i; k++)
-                for(n = 0; n < m; n++){
-                    if(tab1[k].equals(tab2[n])){
-                        powtorzenia[s] = tab1[k];
-                        s++;
+            //searching for repetitive words
+            for(i = 0; i < firstNumberOfWords; i++)
+                for(j = 0; j < secondNumberOfWords; j++){
+                    if(firstFileWords[i].equals(secondFileWords[j])){
+                        repeatedWords[numberOfRepeatedWords] = firstFileWords[i];
+                        numberOfRepeatedWords++;
                         break;
                     }
                 }
 
-            for(k = 0; k < i; k++)
-                for(n = 0; n < s; n++){
-                    if(tab1[k].equals(powtorzenia[n])){
-                        powt1++;
-                    }
-                }
+            firstRepeatedWords = Main.repeatedWordsInFile(firstNumberOfWords, firstFileWords);
+            secondRepeatedWords = Main.repeatedWordsInFile(secondNumberOfWords, secondFileWords);
 
-            for(k = 0; k < m; k++)
-                for(n = 0; n < s; n++){
-                    if(tab2[k].equals(powtorzenia[n])){
-                        powt2++;
-                    }
-                }
-
-            double powt11 = (double)powt1;
-            double powt22 = (double)powt2;
-            double ii = (double)i;
-            double mm = (double)m;
-            double pierwszy = (powt11/ii)*100;
-            double drugi = (powt22/mm)*100;
-            System.out.println(args[0] + ": " + pierwszy + "% powtarzajacych sie slow");
-            System.out.println(args[1] + ": " + drugi + "% powtarzajacych sie slow");
-
-            for(k = 0; k < i; k++)
-                for(n = 0; n < s; n++){
-                    if(tab1[k].equals(powtorzenia[n])){
-                        tab1[k] += "]";
-                    }
-                }
-
-            for(k = 0; k < m; k++)
-                for(n = 0; n < s; n++){
-                    if(tab2[k].equals(powtorzenia[n])){
-                        tab2[k] += "]";
-                    }
-                }
+            double firstPercentage = Main.percentageOfRepeatedWords(firstRepeatedWords, firstNumberOfWords);
+            double secondPercentage = Main.percentageOfRepeatedWords(secondRepeatedWords, secondNumberOfWords);
+            System.out.println(args[0] + ": " + firstPercentage + "% of repeated words in the first file");
+            System.out.println(args[1] + ": " + secondPercentage + "% of repeated words in the second file");
 
         }
         catch (FileNotFoundException ex) {
-            System.out.println("Nie ma takiego pliku");
+            System.out.println("File error");
         }
         finally{
-            if (in1 != null)
-                in1.close();
+            if (fileInFirst != null)
+                fileInFirst.close();
 
-            if (in2 != null)
-                in2.close();
+            if (fileInSecond != null)
+                fileInSecond.close();
 
         }
 
