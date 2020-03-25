@@ -18,6 +18,8 @@ $ java Main exampleFile1.txt exampleFile2.txt
 ### Example of use
 
 Input files:
+
+
 ![File1](./screenshots/exampleFile1.png)
 
 ![File2](./screenshots/exampleFile2.png)
@@ -28,6 +30,8 @@ Output:
 ![Output](./screenshots/exampleOutput.png)
 
 Created files:
+
+
 ![File1](./screenshots/file1result.png)
 
 ![File2](./screenshots/file2result.png)
